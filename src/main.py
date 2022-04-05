@@ -120,13 +120,16 @@ def pep(session):
         soup = BeautifulSoup(response.text, 'lxml')
         title = soup.find('dt', string='Status')
         status = title.find_next_sibling('dd').text
-        if status not in EXPECTED_STATUS[preview_status]:
-            msg = MESSAGE.format(
-                pep_num_link=pep_num_link,
-                status=status,
-                status_names=EXPECTED_STATUS[preview_status]
-            )
-            logging.info(msg)
+        try:
+            if status not in EXPECTED_STATUS[preview_status]:
+                msg = MESSAGE.format(
+                    pep_num_link=pep_num_link,
+                    status=status,
+                    status_names=EXPECTED_STATUS[preview_status]
+                )
+                logging.info(msg)
+        except KeyError:
+            logging.info(f'Неизвестный статус в общей таблице {pep_num_link}')
         statuses.append(status)
     total = len(statuses)
     counter = Counter(statuses)
